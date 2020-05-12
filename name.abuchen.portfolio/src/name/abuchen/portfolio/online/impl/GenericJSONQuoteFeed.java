@@ -32,7 +32,7 @@ import name.abuchen.portfolio.online.impl.variableurl.Factory;
 import name.abuchen.portfolio.online.impl.variableurl.urls.VariableURL;
 import name.abuchen.portfolio.util.WebAccess;
 
-public final class GenericJSONQuoteFeed implements QuoteFeed
+public class GenericJSONQuoteFeed implements QuoteFeed
 {
     public static final String ID = "GENERIC-JSON"; //$NON-NLS-1$
     public static final String DATE_PROPERTY_NAME = "GENERIC-JSON-DATE"; //$NON-NLS-1$
@@ -68,6 +68,10 @@ public final class GenericJSONQuoteFeed implements QuoteFeed
     public QuoteFeedData previewHistoricalQuotes(Security security)
     {
         return getHistoricalQuotes(security, security.getFeedURL(), true, true);
+    }
+    
+    public String getJson(String url) throws IOException, URISyntaxException {
+        return new WebAccess(url).get();
     }
 
     private QuoteFeedData getHistoricalQuotes(Security security, String feedURL, boolean collectRawResponse,
@@ -105,7 +109,7 @@ public final class GenericJSONQuoteFeed implements QuoteFeed
             {
                 try
                 {
-                    json = new WebAccess(url).get();
+                    json = this.getJson(url);
                 }
                 catch (IOException | URISyntaxException e)
                 {
