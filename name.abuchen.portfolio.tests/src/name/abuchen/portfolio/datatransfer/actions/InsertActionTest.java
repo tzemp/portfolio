@@ -125,4 +125,35 @@ public class InsertActionTest
 
         assertThat(properties.size(), is(8));
     }
+
+    @Test
+    public void testSecurityNull() {
+        Account account = client.getAccounts().get(0);
+        Portfolio portfolio = client.getPortfolios().get(0);
+        
+        InsertAction action = new InsertAction(client);
+        action.process(entry, account, portfolio);
+        AccountTransaction transaction = account.getTransactions().get(0);
+        action.process(transaction, account);
+        
+        assertThat(account.getTransactions().size(), is(2));
+
+        client.removeSecurity(entry.getAccountTransaction().getSecurity()); 
+        assertThat(account.getTransactions().size(), is(0));
+        assertThat(portfolio.getTransactions().size(), is(0));
+    }
+
+    @Test
+    public void testDividendTrue() {
+        Account account = client.getAccounts().get(0);
+        Portfolio portfolio = client.getPortfolios().get(0);
+        
+        InsertAction action = new InsertAction(client);
+        action.process(entry, account, portfolio);
+        AccountTransaction transaction = account.getTransactions().get(0);
+        action.setRemoveDividends(true);
+        action.process(transaction, account);
+        
+        assertThat(account.getTransactions().size(), is(2));
+    }
 }

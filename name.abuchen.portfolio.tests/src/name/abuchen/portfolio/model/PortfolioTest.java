@@ -81,4 +81,26 @@ public class PortfolioTest
         assertThat(portfolio.getTransactions(), hasItem(transaction));
     }
 
+    @Test
+    public void tesdGetMonetaryAmount(){
+        transaction.setCurrencyCode("USD");
+        transaction.setAmount(100);
+        TestCurrencyConverter converter_eur = new TestCurrencyConverter();
+        TestCurrencyConverter converter_usd = new TestCurrencyConverter(CurrencyUnit.USD, new InverseExchangeRateTimeSeries(null));
+        
+        long amount = transaction.getMonetaryAmount(converter_eur).getAmount(); 
+        long amount2 = transaction.getMonetaryAmount(converter_usd).getAmount();
+        assertEquals(amount, 100*1.16, 0.0001);
+        assertEquals(amount2, 100, 0.0001);
+    }
+
+
+
+    @Test
+    public void testGetGrossPricePerShare() {
+        TestCurrencyConverter converter_eur = new TestCurrencyConverter();
+        double value = transaction.getGrossPricePerShare(converter_eur.with(transaction.getSecurity().getCurrencyCode())).getAmount();
+        assertEquals(value, 0.0, 0.0001);
+    }
+
 }
